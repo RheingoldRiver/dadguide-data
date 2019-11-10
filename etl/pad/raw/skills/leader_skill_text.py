@@ -19,10 +19,10 @@ class LsTextConverter(BaseTextConverter):
     def passive_stats_convert(self, ls):
         return self.fmt_stats_type_attr_bonus(ls)
 
-    def n_attr_or_heal(self, attr, n_attr, format_string, is_range=False):
+    def n_attr_or_heal(self, attr, n_attr, format_string):
         raise I13NotImplemented()
 
-    def matching_n_or_more_attr(self, attr, min_attr, is_range=False):
+    def matching_n_or_more_attr(self, attr, min_attr):
         raise I13NotImplemented()
 
     def up_to_n_attr(self, attr, max_attr, mult):
@@ -69,7 +69,7 @@ class LsTextConverter(BaseTextConverter):
 
         intro = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True,
                                                     atk=min_mult, rcv=min_rcv_mult)
-        attr_text = self.matching_n_or_more_attr(attr, min_attr, is_range=max_attr > min_attr)
+        attr_text = self.matching_n_or_more_attr(attr, min_attr)
         max_attr_text = self.up_to_n_attr(attr, max_attr, fmt_mult(max_mult)) if max_mult > min_mult else ''
 
         return self.attribute_match_text(intro, attr_text, max_attr_text)

@@ -81,20 +81,18 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         10001: 'Dragonbounds & Dragon Callers',
     }
 
-    def n_attr_or_heal(self, attr, n_attr, format_string, is_range=False):
+    def n_attr_or_heal(self, attr, n_attr, format_string):
         if attr == [0, 1, 2, 3, 4]:
             return format_string.format(n_attr) + ' colors'
         elif attr == [0, 1, 2, 3, 4, 5]:
             return format_string.format(n_attr) + ' colors ({}+heal)'.format(n_attr - 1)
         attr_text = self.attributes_format(attr)
-        if len(attr) > n_attr and is_range:
-            return '{} of {}'.format(str(n_attr), attr_text)
-        elif len(attr) > n_attr:
+        if len(attr) > n_attr:
             return '{}+ of {} at once'.format(str(n_attr), attr_text)
         return '{} at once'.format(attr_text)
     
-    def matching_n_or_more_attr(self, attr, min_attr, is_range=False):
-        return ' when matching ' + self.n_attr_or_heal(attr, min_attr, '{} or more', is_range=is_range)
+    def matching_n_or_more_attr(self, attr, min_attr):
+        return ' when matching ' + self.n_attr_or_heal(attr, min_attr, '{} or more')
     
     def up_to_n_attr(self, attr, max_attr, mult):
         if attr == [0, 1, 2, 3, 4, 5]:
