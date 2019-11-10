@@ -118,19 +118,15 @@ class LsTextConverter(BaseTextConverter):
         max_atk = ls.atk
         attributes = multi_getattr(ls, 'match_attributes', 'attributes')
 
-        skill_text = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True,
+        intro = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True,
                                                     atk=min_atk_mult, rcv=min_rcv_mult)
+        or_more = max_count != min_count
+        attr = self.fmt_multi_attr(attributes)
+        max_mult = fmt_mult(max_atk) if max_count != min_count and max_count > 0 else None
+        return self.mass_match_text(intro, min_count, or_more, attr, max_count, max_mult)
 
-        skill_text += ' when matching ' + str(min_count)
-        if max_count != min_count:
-            skill_text += ' or more connected'
-
-        skill_text += self.fmt_multi_attr(attributes) + ' orbs'
-
-        if max_count != min_count and max_count > 0:
-            skill_text += ' up to {}x at {} orbs'.format(fmt_mult(max_atk), max_count)
-
-        return skill_text
+    def mass_match_text(self, intro, min_count, or_more, attr, max_count, max_mult):
+        raise I13NotImplemented()
 
     def after_attack_convert(self, ls):
         return self.after_attack_text(fmt_mult(ls.multiplier))

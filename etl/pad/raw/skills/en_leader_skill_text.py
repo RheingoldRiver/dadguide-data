@@ -151,6 +151,17 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         if max_mult:
             skill_text += ' up to {}x when matching {}'.format(max_mult, all_colors)
         return skill_text
+
+    def mass_match_text(self, intro, min_count, or_more, attr, max_count, max_mult):
+        skill_text = intro
+        skill_text += ' when matching {}'.format(min_count)
+        if or_more:
+            skill_text += ' or more connected'
+        skill_text += '{} orbs'.format(attr)
+        if not max_mult:
+            return skill_text
+        skill_text += ' up to {}x at {} orbs'.format(max_mult, max_count)
+        return skill_text
     
     def after_attack_text(self, mult):
         return '{}x ATK additional damage when matching orbs'.format(mult)
