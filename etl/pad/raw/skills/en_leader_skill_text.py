@@ -219,6 +219,13 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
     def multi_play_text(self, mult):
         return '{} when in multiplayer mode'.format(mult)
 
+    def dual_passive_stat_text(self, bonus1, bonus2, both_atk):
+        skill_text = bonus1 + '; ' + bonus2
+        if not both_atk:
+            return skill_text
+        skill_text += '; {}x ATK for allies with both Att.'.format(both_atk)
+        return skill_text
+
     def color_cross_text(self, atk, attrs):
         return '{}x ATK for each cross of 5 {} orbs'.format(atk, self.concat_list(attrs))
 

@@ -260,11 +260,14 @@ class LsTextConverter(BaseTextConverter):
             'rcv': ls.rcv_2,
             'shield': 0,
         })
-        skill_text = self.fmt_stats_type_attr_bonus(c1) + '; ' + self.fmt_stats_type_attr_bonus(c2)
-        if not c1.types and not c1.types and c1.atk != 1 and c2.atk != 1:
-            skill_text += '; ' + fmt_mult(ls.atk) + 'x ATK for allies with both Att.'
-
-        return skill_text
+        bonus1 = self.fmt_stats_type_attr_bonus(c1)
+        bonus2 = self.fmt_stats_type_attr_bonus(c2)
+        has_both_condition = not c1.types and not c1.types and c1.atk != 1 and c2.atk != 1
+        both_atk = fmt_mult(ls.atk) if has_both_condition else None
+        return self.dual_passive_stat_text(bonus1, bonus2, both_atk)
+    
+    def dual_passive_stat_text(self, bonus1, bonus2, both_atk):
+        raise I13NotImplemented()
 
     def dual_threshold_stats_convert(self, ls):
         c1 = AttributeDict({
