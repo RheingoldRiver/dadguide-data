@@ -129,6 +129,29 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
     def attribute_match_text(self, intro, attr_text, max_attr_text):
         return intro + attr_text + max_attr_text
     
+    def multi_of_one_attribute_match_text(self, intro, min_match, attr_text, max_mult, max_match):
+        skill_text = intro
+        skill_text += ' when matching {}'.format(min_match)
+        if not max_mult:
+            skill_text += '+'
+        try:
+            skill_text += ' {} combos'.format(attr_text)
+        except Exception as e:
+            print(e)
+        if not max_mult:
+            return skill_text
+        skill_text += ', up to {}x at {} {} combos'.format(max_mult, max_match, attr_text)
+        return skill_text
+    
+    def multi_of_dif_attribute_match_text(self, intro, min_colors, alt_colors, max_mult, all_colors):
+        skill_text = intro
+        skill_text += ' when matching {}'.format(min_colors)
+        if alt_colors:
+            skill_text += '({})'.format(alt_colors)
+        if max_mult:
+            skill_text += ' up to {}x when matching {}'.format(max_mult, all_colors)
+        return skill_text
+    
     def after_attack_text(self, mult):
         return '{}x ATK additional damage when matching orbs'.format(mult)
     

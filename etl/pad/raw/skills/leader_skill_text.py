@@ -87,35 +87,27 @@ class LsTextConverter(BaseTextConverter):
         min_match = multi_getattr(ls, 'min_attr', 'min_combo', 'min_match')
         max_mult = multi_getattr(ls, 'max_atk', 'atk')
 
-        skill_text = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True,
+        intro = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True,
                                                     atk=min_atk_mult,
                                                     rcv=min_rcv_mult)
 
         if all(x == attributes[0] for x in attributes):
-            match_or_more = len(attributes) == min_match
-            skill_text += ' when matching {}'.format(min_match)
-            if match_or_more:
-                skill_text += '+'
-            try:
-                skill_text += ' {} combos'.format(self.ATTRIBUTES[attributes[0]])
-            except Exception as ex:
-                print(ex)
-            if not match_or_more:
-                skill_text += ', up to {}x at {} {} combos'.format(
-                    fmt_mult(max_mult), len(attributes), self.ATTRIBUTES[attributes[0]])
+            attr_text = self.ATTRIBUTES[attributes[0]]
+            max_mult = fmt_mult(max_mult) if len(attributes) != min_match else None
+            max_match = len(attributes)
+            return self.multi_of_one_attribute_match_text(intro, min_match, attr_text, max_mult, max_match)
+        min_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes[:min_match]])
+        alt_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes[1:min_match + 1]]) \
+            if len(attributes) > min_match else None
+        all_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes])
+        max_mult = fmt_mult(max_mult) if max_mult > min_atk_mult else None
+        return self.multi_of_dif_attribute_match_text(intro, min_colors, alt_colors, max_mult, all_colors)
 
-        else:
-            min_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes[:min_match]])
-            skill_text += ' when matching {}'.format(min_colors)
-            if len(attributes) > min_match:
-                alt_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes[1:min_match + 1]])
-                skill_text += '({})'.format(alt_colors)
-
-            if max_mult > min_atk_mult:
-                all_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes])
-                skill_text += ' up to {}x when matching {}'.format(fmt_mult(max_mult), all_colors)
-
-        return skill_text
+    def multi_of_one_attribute_match_text(self, intro, min_match, attr_text, max_mult, max_match):
+        raise I13NotImplemented()
+    
+    def multi_of_dif_attribute_match_text(self, intro, min_colors, alt_colors, max_mult, all_colors):
+        raise I13NotImplemented()
 
     def mass_match_convert(self, ls):
         min_count = ls.min_count
