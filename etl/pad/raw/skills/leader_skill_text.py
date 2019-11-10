@@ -31,6 +31,10 @@ class LsTextConverter(BaseTextConverter):
     @staticmethod
     def concat_list(list_to_concat):
         raise I13NotImplemented()
+    
+    @staticmethod
+    def concat_ls_parts(list_to_concat):
+        raise I13NotImplemented()
 
     def threshold_stats_convert(self, ls):
         intro = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True)
@@ -291,33 +295,31 @@ class LsTextConverter(BaseTextConverter):
             'rcv': getattr(ls, 'rcv_2', ls.rcv),
             'shield': getattr(ls, 'shield_2', ls.shield),
         })
-
-        # TODO: this could use some cleanup
-        skill_text = ''
+        
+        skill_parts = []
         if c1.atk != 0 or c1.rcv != 1 or c1.shield != 0:
             if c1.atk == 0:
                 c1.atk = 1
-            if c1.threshold == 1:
-                skill_text = self.fmt_stats_type_attr_bonus(c1, reduce_join_txt=' and ', skip_attr_all=True)
-                skill_text += ' when HP is full' if c1.above else ' when HP is not full'
-            else:
-                skill_text = self.fmt_stats_type_attr_bonus(c1, reduce_join_txt=' and ', skip_attr_all=True)
-                skill_text += ' when above ' if c1.above else ' when below '
-                skill_text += fmt_mult(c1.threshold * 100) + '% HP'
+            skill_parts.append(self.dual_threshold_stats_part_convert(c1))
 
         if c2.threshold != 0:
-            if skill_text != '':
-                skill_text += '; '
-            if c2.threshold == 1:
-                skill_text += self.fmt_stats_type_attr_bonus(c2, reduce_join_txt=' and ', skip_attr_all=True)
-                skill_text += ' when HP is full' if c2.above else ' when HP is not full'
-            else:
-                skill_text += self.fmt_stats_type_attr_bonus(c2, reduce_join_txt=' and ', skip_attr_all=True)
-                skill_text += ' when above ' if c2.above else ' when below '
-                skill_text += fmt_mult(c2.threshold * 100) + '% HP'
+            skill_parts.append(self.dual_threshold_stats_part_convert(c2))
 
-        return skill_text
+        return self.concat_ls_parts(skill_parts)
+    
+    def dual_threshold_stats_part_convert(self, c):
+        intro = self.fmt_stats_type_attr_bonus(c, reduce_join_txt=' and ', skip_attr_all=True)
+        if c.threshold == 1:
+            return self.dual_threshold_stats_part_full_hp_text(intro, c.above)
+        threshold = fmt_mult(c.threshold * 100)
+        return self.dual_threshold_stats_part_threshold_text(intro, c.above, threshold)
+        
+    def dual_threshold_stats_part_full_hp_text(self, intro, above):
+        raise I13NotImplemented()
 
+    def dual_threshold_stats_part_threshold_text(self, intro, above, threshold):
+        raise I13NotImplemented()
+    
     def color_cross_convert(self, ls):
         atk = fmt_mult(ls.crosses[0].atk)
         attr_list = [self.ATTRIBUTES[ls.crosses[i].attribute] for i in range(0, len(ls.crosses))]

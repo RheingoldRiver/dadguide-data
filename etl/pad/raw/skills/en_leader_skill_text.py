@@ -106,6 +106,10 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
     @staticmethod
     def concat_list(list_to_concat):
         return ', '.join(list_to_concat)
+    
+    @staticmethod
+    def concat_ls_parts(list_to_concat):
+        return '; '.join(list(filter(None, list_to_concat)))
 
     def threshold_stats_text(self, intro, above, threshold, is_100):
         skill_text = intro
@@ -117,6 +121,23 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         else:
             skill_text += ' when above ' if above else ' when below '
             skill_text += threshold + '% HP'
+        return skill_text
+
+    def dual_threshold_stats_part_full_hp_text(self, intro, above):
+        skill_text = intro
+        if above:
+            skill_text += ' when HP is full'
+        else:
+            skill_text += ' when HP is not full'
+        return skill_text
+
+    def dual_threshold_stats_part_threshold_text(self, intro, above, threshold):
+        skill_text = intro
+        if above:
+            skill_text += ' when above '
+        else:
+            skill_text += ' when below '
+        skill_text += '{}% HP'.format(threshold)
         return skill_text
 
     def combo_match_text(self, intro, min_combos, max_combos, up_to, max_mult):
