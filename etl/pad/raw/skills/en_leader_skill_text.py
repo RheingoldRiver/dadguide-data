@@ -103,14 +103,6 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
             return ' up to {}x when matching {}'.format(mult, max_attr)
         return ' up to {}x at '.format(mult) + self.n_attr_or_heal(attr, max_attr, '{}')
 
-    @staticmethod
-    def concat_list(list_to_concat):
-        return ', '.join(list_to_concat)
-    
-    @staticmethod
-    def concat_ls_parts(list_to_concat):
-        return '; '.join(list(filter(None, list_to_concat)))
-
     def threshold_stats_text(self, intro, above, threshold, is_100):
         skill_text = intro
         if is_100:
@@ -232,10 +224,11 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         return '{}x ATK for matched Att. when matching 5 Orbs with 1+ enhanced'.format(mult)
 
     def heart_cross_text(self, multiplier_text, reduct_text):
-        skill_text = multiplier_text if multiplier_text else ''
-        skill_text += ' and ' + reduct_text if multiplier_text else reduct_text.capitalize()
-        skill_text += ' when matching 5 Heal orbs in a cross formation'
-        return skill_text
+        skill_parts = [
+            multiplier_text,
+            reduct_text + ' when matching 5 Heal orbs in a cross formation'
+        ]
+        return self.concat_list_and(skill_parts)
 
     def multi_play_text(self, mult):
         return '{} when in multiplayer mode'.format(mult)
@@ -251,11 +244,10 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         return '{}x ATK for each cross of 5 {} orbs'.format(atk, self.concat_list(attrs))
 
     def orb_remain_text(self, intro, base_atk, orb_count, max_atk):
-        skill_text = intro + '; ' if intro else ''
-        skill_text += '{}x ATK when there are {} or fewer orbs remaining'.format(base_atk, orb_count)
+        skill_text = '{}x ATK when there are {} or fewer orbs remaining'.format(base_atk, orb_count)
         if max_atk:
             skill_text += ' up to {}x ATK when 0 orbs left'.format(max_atk)
-        return skill_text
+        return self.concat_list_semicolons([intro, skill_text])
 
     def get_collab_name(self, collab_id):
         if collab_id not in self._COLLAB_MAP:
@@ -289,37 +281,20 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         skill_text += ' when matching 5' + attr + ' orbs in L shape'
         return skill_text
     
-    def add_combo_att_text(self, attr_condition_text, atk, bonus_combo):
-        if atk not in [0, 1]:
-            skill_text = self.fmt_multiplier_text(1, atk, 1) + ' and increase combo by {}'.format(
-                bonus_combo)
-        else:
-            skill_text = 'Increase combo by {}'.format(bonus_combo)
-        skill_text += attr_condition_text
-        return skill_text
+    def add_combo_att_text(self, mult, attr_condition_text, bonus_combo):
+        skill_parts = [
+            mult,
+            'increase combo by {}'.format(bonus_combo) + attr_condition_text
+        ]
+        return self.concat_list_and(skill_parts)
 
-    def orb_heal_text(self, atk, mult, shield, reduct_text, unbind_amt, heal_amt):
-        skill_text = ''
-
-        if atk != 1 and atk != 0:
-            skill_text += mult
-
-        if shield != 0:
-            if skill_text:
-                if unbind_amt == 0:
-                    skill_text += ' and '
-                else:
-                    skill_text += ', '
-                skill_text += reduct_text
-            else:
-                skill_text += reduct_text[0].upper() + reduct_text[1:]
-
-        if unbind_amt != 0:
-            skill_text += ' and reduce' if skill_text else 'Reduce'
-            skill_text += ' awoken skill binds by {} turns'.format(unbind_amt)
-
+    def orb_heal_text(self, atk, mult, reduct_text, unbind_amt, heal_amt):
+        skill_parts = [mult, reduct_text]
+        if unbind_amt:
+            unbind_text = 'reduce awoken skill binds by {} turns'.format(unbind_amt)
+            skill_parts.append(unbind_text)
+        skill_text = self.concat_list_and(skill_parts)
         skill_text += ' when recovering more than {} HP from Heal orbs'.format(heal_amt)
-
         return skill_text
 
     def rainbow_bonus_damage_text(self, bonus_damage, attr_condition_text):

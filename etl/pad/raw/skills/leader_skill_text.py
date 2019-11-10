@@ -27,14 +27,6 @@ class LsTextConverter(BaseTextConverter):
 
     def up_to_n_attr(self, attr, max_attr, mult):
         raise I13NotImplemented()
-    
-    @staticmethod
-    def concat_list(list_to_concat):
-        raise I13NotImplemented()
-    
-    @staticmethod
-    def concat_ls_parts(list_to_concat):
-        raise I13NotImplemented()
 
     def threshold_stats_convert(self, ls):
         intro = self.fmt_stats_type_attr_bonus(ls, reduce_join_txt=' and ', skip_attr_all=True)
@@ -305,7 +297,7 @@ class LsTextConverter(BaseTextConverter):
         if c2.threshold != 0:
             skill_parts.append(self.dual_threshold_stats_part_convert(c2))
 
-        return self.concat_ls_parts(skill_parts)
+        return self.concat_list_semicolons(skill_parts)
     
     def dual_threshold_stats_part_convert(self, c):
         intro = self.fmt_stats_type_attr_bonus(c, reduce_join_txt=' and ', skip_attr_all=True)
@@ -370,19 +362,20 @@ class LsTextConverter(BaseTextConverter):
 
     def add_combo_att_convert(self, ls):
         attr_condition_text = self.matching_n_or_more_attr(ls.attributes, ls.min_attr)
-        return self.add_combo_att_text(attr_condition_text, ls.atk, ls.bonus_combo)
+        mult = self.fmt_multiplier_text(1, ls.atk, 1) if ls.atk not in [0, 1] else None
+        return self.add_combo_att_text(mult, attr_condition_text, ls.bonus_combo)
 
-    def add_combo_att_text(self, attr_condition_text, atk, bonus_combo):
+    def add_combo_att_text(self, mult, attr_condition_text, bonus_combo):
         raise I13NotImplemented()
 
     def orb_heal_convert(self, ls):
         atk = ls.atk
-        mult = self.fmt_multiplier_text(1, atk, 1)
-        shield = ls.shield
-        reduct_text = self.fmt_reduct_text(shield) if shield != 0 else None
-        return self.orb_heal_text(atk, mult, shield, reduct_text, ls.unbind_amt, ls.heal_amt)
+        mult = self.fmt_multiplier_text(1, atk, 1) if atk != 1 and atk != 0 else None
+        reduct_text = self.fmt_reduct_text(ls.shield) if ls.shield != 0 else None
+        unbind_amt = ls.unbind_amt if ls.unbind_amt != 0 else None
+        return self.orb_heal_text(atk, mult, reduct_text, unbind_amt, ls.heal_amt)
     
-    def orb_heal_text(self, atk, mult, shield, reduct_text, unbind_amt, heal_amt):
+    def orb_heal_text(self, atk, mult, reduct_text, unbind_amt, heal_amt):
         raise I13NotImplemented()
 
     def rainbow_bonus_damage_convert(self, ls):

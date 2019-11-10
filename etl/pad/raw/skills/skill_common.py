@@ -55,6 +55,18 @@ class BaseTextConverter(object):
     def reduce_attr_pct(self, attr_text, shield_text):
         raise I13NotImplemented()
 
+    @staticmethod
+    def concat_list(list_to_concat):
+        raise I13NotImplemented()
+
+    @staticmethod
+    def concat_list_and(list_to_concat):
+        raise I13NotImplemented()
+
+    @staticmethod
+    def concat_list_semicolons(list_to_concat):
+        raise I13NotImplemented()
+
     #############################################################################
     # Everything below here are common helpers
     #############################################################################
