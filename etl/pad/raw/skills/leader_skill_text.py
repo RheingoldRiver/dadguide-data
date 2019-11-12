@@ -93,8 +93,7 @@ class LsTextConverter(BaseTextConverter):
             max_match = len(attributes)
             return self.multi_of_one_attribute_match_text(intro, min_match, attr_text, max_mult, max_match)
         min_colors = self.attributes_format(attributes[:min_match], sep='+')
-        alt_colors = self.attributes_format(attributes[1:min_match + 1], sep='+') \
-            if len(attributes) > min_match else None
+        alt_colors = self.attributes_format(attributes[1:], sep='+') if len(attributes) > min_match else None
         all_colors = self.attributes_format(attributes, sep='+')
         max_mult = fmt_mult(max_mult) if max_mult > min_atk_mult else None
         return self.multi_of_dif_attribute_match_text(intro, min_colors, alt_colors, max_mult, all_colors)
