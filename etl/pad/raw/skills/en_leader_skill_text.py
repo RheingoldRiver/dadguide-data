@@ -106,10 +106,7 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
     def threshold_stats_text(self, intro, above, threshold, is_100):
         skill_text = intro
         if is_100:
-            skill_text += ' when HP is'
-            if not above:
-                skill_text += ' not'
-            skill_text += ' full'
+            skill_text += ' when HP is {}'.format('full' if above else 'not full')
         else:
             skill_text += ' when above ' if above else ' when below '
             skill_text += threshold + '% HP'
@@ -117,18 +114,12 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
 
     def dual_threshold_stats_part_full_hp_text(self, intro, above):
         skill_text = intro
-        if above:
-            skill_text += ' when HP is full'
-        else:
-            skill_text += ' when HP is not full'
+        skill_text += ' when HP {} full'.format('is' if above else 'is not')
         return skill_text
 
     def dual_threshold_stats_part_threshold_text(self, intro, above, threshold):
         skill_text = intro
-        if above:
-            skill_text += ' when above '
-        else:
-            skill_text += ' when below '
+        skill_text += ' when {} '.format('above' if above else 'below')
         skill_text += '{}% HP'.format(threshold)
         return skill_text
 
@@ -147,10 +138,7 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         skill_text += ' when matching {}'.format(min_match)
         if not max_mult:
             skill_text += '+'
-        try:
-            skill_text += ' {} combos'.format(attr_text)
-        except Exception as e:
-            print(e)
+        skill_text += ' {} combos'.format(attr_text)
         if not max_mult:
             return skill_text
         skill_text += ', up to {}x at {} {} combos'.format(max_mult, max_match, attr_text)
@@ -234,11 +222,12 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
         return '{} when in multiplayer mode'.format(mult)
 
     def dual_passive_stat_text(self, bonus1, bonus2, both_atk):
-        skill_text = bonus1 + '; ' + bonus2
-        if not both_atk:
-            return skill_text
-        skill_text += '; {}x ATK for allies with both Att.'.format(both_atk)
-        return skill_text
+        skill_parts = [
+            bonus1,
+            bonus2,
+            '{}x ATK for allies with both Att.'.format(both_atk) if both_atk else None
+        ]
+        return self.concat_list_semicolons(skill_parts)
 
     def color_cross_text(self, atk, attrs):
         return '{}x ATK for each cross of 5 {} orbs'.format(atk, self.concat_list(attrs))
@@ -284,7 +273,7 @@ class EnLsTextConverter(LsTextConverter, EnBaseTextConverter):
     def add_combo_att_text(self, mult, attr_condition_text, bonus_combo):
         skill_parts = [
             mult,
-            'increase combo by {}'.format(bonus_combo) + attr_condition_text
+            'increase combo by {}{}'.format(bonus_combo, attr_condition_text)
         ]
         return self.concat_list_and(skill_parts)
 

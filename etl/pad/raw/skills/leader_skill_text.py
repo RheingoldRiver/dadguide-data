@@ -92,10 +92,10 @@ class LsTextConverter(BaseTextConverter):
             max_mult = fmt_mult(max_mult) if len(attributes) != min_match else None
             max_match = len(attributes)
             return self.multi_of_one_attribute_match_text(intro, min_match, attr_text, max_mult, max_match)
-        min_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes[:min_match]])
-        alt_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes[1:min_match + 1]]) \
+        min_colors = self.attributes_format(attributes[:min_match], sep='+')
+        alt_colors = self.attributes_format(attributes[1:min_match + 1], sep='+') \
             if len(attributes) > min_match else None
-        all_colors = '+'.join([self.ATTRIBUTES[a] for a in attributes])
+        all_colors = self.attributes_format(attributes, sep='+')
         max_mult = fmt_mult(max_mult) if max_mult > min_atk_mult else None
         return self.multi_of_dif_attribute_match_text(intro, min_colors, alt_colors, max_mult, all_colors)
 
@@ -370,8 +370,8 @@ class LsTextConverter(BaseTextConverter):
 
     def orb_heal_convert(self, ls):
         atk = ls.atk
-        mult = self.fmt_multiplier_text(1, atk, 1) if atk != 1 and atk != 0 else None
-        reduct_text = self.fmt_reduct_text(ls.shield) if ls.shield != 0 else None
+        mult = self.fmt_multiplier_text(1, atk, 1) if atk and atk != 1 else None
+        reduct_text = self.fmt_reduct_text(ls.shield) if ls.shield else None
         unbind_amt = ls.unbind_amt if ls.unbind_amt != 0 else None
         return self.orb_heal_text(atk, mult, reduct_text, unbind_amt, ls.heal_amt)
     

@@ -71,8 +71,8 @@ class BaseTextConverter(object):
     # Everything below here are common helpers
     #############################################################################
 
-    def attributes_format(self, attributes: List[int]) -> str:
-        return ', '.join([self.ATTRIBUTES[i] for i in attributes])
+    def attributes_format(self, attributes: List[int], sep: str=', ') -> str:
+        return sep.join([self.ATTRIBUTES[i] for i in attributes])
 
     def types_format(self, types: List[int]) -> str:
         return ', '.join([self.TYPES[i] for i in types])
@@ -125,6 +125,7 @@ class BaseTextConverter(object):
         return skill_text
 
     def fmt_multi_attr(self, attributes, conjunction='or'):
+        # TODO: Returned value shouldn't start with a space
         prefix = ' '
         if 1 <= len(attributes) <= 7:
             attr_list = [self.ATTRIBUTES[i] for i in attributes]
