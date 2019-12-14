@@ -1,4 +1,4 @@
-from pad.raw.skills.skill_common import BaseTextConverter
+from pad.raw.skills.skill_common import BaseTextConverter, I13NotImplemented
 
 
 def fmt_mult(x):
@@ -8,24 +8,31 @@ def fmt_mult(x):
 class AsTextConverter(BaseTextConverter):
 
     def fmt_repeated(self, text, amount):
-        return '{} {} times'.format(text, amount)
+        raise I13NotImplemented()
 
     def fmt_mass_atk(self, mass_attack):
-        if mass_attack:
-            return 'all enemies'
-        else:
-            return 'an enemy'
+        raise I13NotImplemented()
 
     def fmt_duration(self, duration):
-        return 'For {} {}, '.format(duration, 'turns' if duration > 1 else 'turn')
+        raise I13NotImplemented()
 
     def attr_nuke_convert(self, act):
-        return 'Deal ' + fmt_mult(act.multiplier) + 'x ATK ' + self.ATTRIBUTES[int(
-            act.attribute)] + ' damage to ' + self.fmt_mass_atk(act.mass_attack)
+        mult = fmt_mult(act.multiplier)
+        attr = self.ATTRIBUTES[int(act.attribute)]
+        target = self.fmt_mass_atk(act.mass_attack)
+        return self.attr_nuke_text(mult, attr, target)
+    
+    def attr_nuke_text(self, mult, attr, target):
+        raise I13NotImplemented()
 
     def fixed_attr_nuke_convert(self, act):
-        return 'Deal ' + str(act.damage) + ' ' + self.ATTRIBUTES[int(
-            act.attribute)] + ' damage to ' + self.fmt_mass_atk(act.mass_attack)
+        damage = str(act.damage)
+        attr = self.ATTRIBUTES[int(act.attribute)]
+        target = self.fmt_mass_atk(act.mass_attack)
+        return self.fixed_attr_nuke_text(damage, attr, target)
+    
+    def fixed_attr_nuke_text(self, damage, attr, target):
+        raise I13NotImplemented()
 
     def self_att_nuke_convert(self, act):
         return 'Deal ' + fmt_mult(act.multiplier) + \
